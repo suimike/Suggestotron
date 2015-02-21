@@ -4,7 +4,7 @@ class TopicsController < ApplicationController
   # GET /topics
   # GET /topics.json
   def index
-    @topics = Topic.all
+    @topics = reorder
   end
 
   # GET /topics/1
@@ -41,11 +41,18 @@ class TopicsController < ApplicationController
     @topic.votes.create
     redirect_to(topics_path)
   end
-    def downvote
+
+  def downvote
     @topic = Topic.find(params[:id])
-    @topic.votes.destroy
+    if @topic.votes.count != 0 
+    @topic.votes.first.destroy    
+    end 
     redirect_to(topics_path)
   end
+
+  def reorder
+     Topic.all.sort_by{|topic| topic.votes.count}.reverse
+   end
   # PATCH/PUT /topics/1
   # PATCH/PUT /topics/1.json
   def update
@@ -59,6 +66,8 @@ class TopicsController < ApplicationController
       end
     end
   end
+
+
 
   # DELETE /topics/1
   # DELETE /topics/1.json
@@ -82,4 +91,6 @@ class TopicsController < ApplicationController
     def topic_params
       params.require(:topic).permit(:title, :description)
     end
-end
+  end
+
+
